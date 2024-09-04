@@ -1,14 +1,20 @@
 package org.choongang.global.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @RedisHash(timeToLive = 600L)
 public class SessionEntity {
 
-    // 로그인한 경우라면 JWT 토큰, 아니면 guestUid
     @Id
-    private String token;
     private String key;
     private String value;
 }

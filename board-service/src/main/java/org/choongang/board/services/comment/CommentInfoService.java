@@ -2,7 +2,6 @@ package org.choongang.board.services.comment;
 
 import com.querydsl.core.BooleanBuilder;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.choongang.board.controllers.RequestComment;
 import org.choongang.board.entities.BoardData;
@@ -11,6 +10,7 @@ import org.choongang.board.entities.QCommentData;
 import org.choongang.board.exceptions.CommentNotFoundException;
 import org.choongang.board.repositories.BoardDataRepository;
 import org.choongang.board.repositories.CommentDataRepository;
+import org.choongang.global.services.SessionService;
 import org.choongang.member.MemberUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
@@ -28,6 +28,7 @@ public class CommentInfoService {
     private final BoardDataRepository boardDataRepository;
     private final MemberUtil memberUtil;
     private final HttpServletRequest request;
+    private final SessionService sessionService;
 
     /**
      * 댓글 단일 조회
@@ -100,10 +101,9 @@ public class CommentInfoService {
 
         // 비회원 -> 비회원 비밀번호가 확인 된 경우 삭제, 수정 가능
         // 비회원 비밀번호 인증 여부 세션에 있는 guest_confirmed_게시글번호 true -> 인증
-        HttpSession session = request.getSession();
         String key = "confirm_comment_data_" + data.getSeq();
-        Boolean guestConfirmed = (Boolean)session.getAttribute(key);
-        if (memberEmail == null && guestConfirmed != null && guestConfirmed) {
+        String guestConfirmed = sessionService.get(key);
+        if (memberEmail == null && guestConfirmed != null && guestConfirmed.equals("true")) {
             editable = true;
             mine = true;
         }

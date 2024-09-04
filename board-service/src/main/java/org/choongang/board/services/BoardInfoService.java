@@ -7,9 +7,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.jni.FileInfo;
 import org.choongang.board.constants.DeleteStatus;
 import org.choongang.board.controllers.BoardDataSearch;
 import org.choongang.board.controllers.RequestBoard;
@@ -24,7 +22,7 @@ import org.choongang.board.services.config.BoardConfigInfoService;
 import org.choongang.global.CommonSearch;
 import org.choongang.global.ListData;
 import org.choongang.global.Pagination;
-import org.choongang.global.Utils;
+import org.choongang.global.services.SessionService;
 import org.choongang.member.MemberUtil;
 import org.choongang.member.constants.Authority;
 import org.choongang.member.entities.Member;
@@ -51,7 +49,7 @@ public class BoardInfoService {
 
     private final HttpServletRequest request;
     private final MemberUtil memberUtil;
-    private final Utils utils;
+    private final SessionService sessionService;
 
     /**
      * 게시글 목록 조회
@@ -367,9 +365,8 @@ public class BoardInfoService {
 
         // 비회원 - 비회원 비밀번호를 검증한 경우 - 게시글 소유자, 수정, 삭제 가능
         // 비회원이 비밀번호를 검증한 경우 세션 키 : confirmed_board_data_게시글번호, 값 true
-        HttpSession session = request.getSession();
-        Boolean guestConfirmed = (Boolean)session.getAttribute("confirm_board_data_" + item.getSeq());
-        if (boardUserEmail == null && guestConfirmed != null && guestConfirmed) { // 비회원 비밀번호가 인증된 경우
+        String guestConfirmed = sessionService.get("confirm_board_data_" + item.getSeq());
+        if (boardUserEmail == null && guestConfirmed != null && guestConfirmed.equals("true")) { // 비회원 비밀번호가 인증된 경우
             editable = true;
             mine = true;
         }

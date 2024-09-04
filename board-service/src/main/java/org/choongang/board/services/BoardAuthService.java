@@ -1,6 +1,5 @@
 package org.choongang.board.services;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.choongang.board.entities.Board;
 import org.choongang.board.entities.BoardData;
@@ -13,6 +12,7 @@ import org.choongang.board.services.config.BoardConfigInfoService;
 import org.choongang.global.Utils;
 import org.choongang.global.exceptions.CommonException;
 import org.choongang.global.exceptions.UnAuthorizedException;
+import org.choongang.global.services.SessionService;
 import org.choongang.member.MemberUtil;
 import org.choongang.member.constants.Authority;
 import org.springframework.http.HttpStatus;
@@ -30,8 +30,9 @@ public class BoardAuthService {
     private final BoardInfoService infoService;
     private final CommentInfoService commentInfoService;
     private final PasswordEncoder encoder;
-    private final HttpSession session;
+    private final SessionService sessionService;
     private final Utils utils;
+
 
     private Board board;
     private BoardData boardData;
@@ -49,7 +50,7 @@ public class BoardAuthService {
             return;
         }
 
-        session.setAttribute("mode", mode);
+        sessionService.save("mode", mode);
         if (List.of("list", "write", "update", "view").contains(mode)) {
             if (seq != null && seq.longValue() != 0L) {
                 boardData = infoService.get(seq);
@@ -139,7 +140,7 @@ public class BoardAuthService {
             throw new CommonException(utils.getMessage("NotBlank.password"), HttpStatus.BAD_REQUEST);
         }
 
-        String mode = (String)session.getAttribute("mode");
+        String mode = sessionService.get("mode");
         mode = StringUtils.hasText(mode) ? mode : "update";
         if (List.of("update", "delete").contains(mode)) { // 게시글 수정, 삭제인 경우
             if (!encoder.matches(password, boardData.getGuestPw())) {
@@ -147,7 +148,7 @@ public class BoardAuthService {
             }
 
             String key = "confirm_board_data_" + boardData.getSeq();
-            session.setAttribute(key, true);
+            sessionService.save(key, "true");
         }
 
 
@@ -169,14 +170,14 @@ public class BoardAuthService {
             throw new CommonException(utils.getMessage("NotBlank.password"), HttpStatus.BAD_REQUEST);
         }
 
-        String mode = (String)session.getAttribute("mode");
+        String mode = sessionService.get("mode");
         mode = StringUtils.hasText(mode) ? mode : "comment_update";
         if (List.of("comment_update", "comment_delete").contains(mode)) { // 댓글 수정, 삭제인 경우
             if (!encoder.matches(password, commentData.getGuestPw())) {
                 throw new GuestPasswordMismatchException();
             }
             String key = "confirm_comment_data_" + commentData.getSeq();
-            session.setAttribute(key, true);
+            sessionService.save(key, "true");
         }
     }
 }
