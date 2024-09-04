@@ -7,6 +7,7 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
@@ -75,5 +76,25 @@ public class Utils { // 빈의 이름 - utils
         } catch (Exception e) {
             return String.format("%s://%s:%d%s%s", request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath(), url);
         }
+    }
+
+    /**
+     * 요청 받은 JWT 토큰 조회
+     *
+     * @return
+     */
+    public String getToken() {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken)
+                && bearerToken.toUpperCase().startsWith("BEARER ")) {
+            return bearerToken.substring(7).trim();
+        }
+
+        String token = request.getParameter("token");
+        if (StringUtils.hasText(token)) {
+            return token;
+        }
+
+        return null;
     }
 }

@@ -36,13 +36,7 @@ public class SecurityConfig {
                    h.accessDeniedHandler((req, res, e) -> res.sendError(HttpStatus.UNAUTHORIZED.value()));
                 })
                 .authorizeHttpRequests(c -> {
-                        c.requestMatchers(
-                            "/file/**",
-                                "/apidocs.html",
-                                "/swagger-ui/**",
-                                "/api-docs/**"
-                            ).permitAll() // 회원가입, 로그인(토큰)은 모든 접근 가능
-                            .anyRequest().authenticated(); // 그외에는 인증 필요
+                        c.anyRequest().permitAll();
                 });
 
         return http.build();

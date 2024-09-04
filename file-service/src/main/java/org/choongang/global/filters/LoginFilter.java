@@ -58,7 +58,6 @@ public class LoginFilter extends GenericFilterBean {
      */
     private void loginProcess(String token) {
 
-        List<ServiceInstance> instances = discoveryClient.getInstances("member-service");
 
         try {
             String apiUrl = utils.url("/account", "member-service");
