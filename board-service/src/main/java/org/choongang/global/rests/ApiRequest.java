@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -20,10 +21,15 @@ public class ApiRequest {
     private final ObjectMapper om;
     private final Utils utils;
 
-    private ResponseEntity<String> response;
+    private ResponseEntity<JSONData> response;
+    private JSONData jsonData;
 
     public ApiRequest request(String url, String serviceId) {
         return request(url, serviceId, HttpMethod.GET, null);
+    }
+
+    public ApiRequest request(String url, String serviceId, HttpMethod method) {
+        return request(url, serviceId, method, null);
     }
 
     public ApiRequest request(String url, String serviceId, HttpMethod method, Object data) {
@@ -42,7 +48,7 @@ public class ApiRequest {
                 String body = om.writeValueAsString(data);
                 HttpEntity<String> request = new HttpEntity<>(body, headers);
 
-                this.response = restTemplate.exchange(URI.create(requestUrl), method, request, String.class);
+                this.response = restTemplate.exchange(URI.create(requestUrl), method, request, JSONData.class);
 
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -50,9 +56,12 @@ public class ApiRequest {
         } else { // GET 또는 DELETE 방식인 경우
 
             HttpEntity<Void> request = new HttpEntity<>(headers);
-            this.response = restTemplate.exchange(URI.create(requestUrl), method, request, String.class);
+            this.response = restTemplate.exchange(URI.create(requestUrl), method, request, JSONData.class);
         }
 
+        if (this.response != null) {
+            jsonData = this.response.getBody();
+        }
         return this;
     }
 
@@ -64,8 +73,12 @@ public class ApiRequest {
         return response.getStatusCode();
     }
 
-    public ResponseEntity<String> getResponse() {
+    public ResponseEntity<JSONData> getResponse() {
         return response;
+    }
+
+    public JSONData getData() {
+        return jsonData;
     }
 
     /**
@@ -75,9 +88,11 @@ public class ApiRequest {
      * @return
      * @param <T>
      */
+
     public <T> T toJSON(Class<T> clazz) {
 
-        String body = response.getBody();
+        JSONData jsonData = response.getBody();
+        String body = (String)jsonData.getData();
         if (StringUtils.hasText(body)) {
             try {
                 return om.readValue(body, clazz);
@@ -96,8 +111,10 @@ public class ApiRequest {
      * @return
      * @param <T>
      */
-    public <T> T toJson(TypeReference<T> typeReference) {
-        String body = response.getBody();
+    public <T> List<T> toJSON(TypeReference<List<T>> typeReference) {
+
+        JSONData jsonData = response.getBody();
+        String body = (String)jsonData.getData();
         if (StringUtils.hasText(body)) {
             try {
                 return om.readValue(body, typeReference);
@@ -124,6 +141,6 @@ public class ApiRequest {
      * @return
      */
     public String toString() {
-        return response.getBody();
+        return (String)jsonData.getData();
     }
 }

@@ -19,6 +19,8 @@ import org.choongang.board.exceptions.BoardDataNotFoundException;
 import org.choongang.board.repositories.BoardDataRepository;
 import org.choongang.board.services.comment.CommentInfoService;
 import org.choongang.board.services.config.BoardConfigInfoService;
+import org.choongang.file.entities.FileInfo;
+import org.choongang.file.services.FileInfoService;
 import org.choongang.global.CommonSearch;
 import org.choongang.global.ListData;
 import org.choongang.global.Pagination;
@@ -43,7 +45,7 @@ public class BoardInfoService {
     private final JPAQueryFactory queryFactory;
     private final BoardDataRepository repository;
     private final BoardConfigInfoService configInfoService;
-    //private final FileInfoService fileInfoService;
+    private final FileInfoService fileInfoService;
     //private final WishListService wishListService;
     private final CommentInfoService commentInfoService;
 
@@ -340,11 +342,11 @@ public class BoardInfoService {
     public void addInfo(BoardData item) {
         // 업로드한 파일 목록 S
         String gid = item.getGid();
-        //List<FileInfo> editorImages = fileInfoService.getList(gid, "editor");
-        //List<FileInfo> attachFiles = fileInfoService.getList(gid, "attach");
+        List<FileInfo> editorImages = fileInfoService.getList(gid, "editor");
+        List<FileInfo> attachFiles = fileInfoService.getList(gid, "attach");
 
-        //item.setEditorImages(editorImages);
-        //item.setAttachFiles(attachFiles);
+        item.setEditorImages(editorImages);
+        item.setAttachFiles(attachFiles);
         // 업로드한 파일 목록 E
 
         /* 게시글 권한 정보 처리 S */
