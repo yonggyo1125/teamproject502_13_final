@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -21,8 +22,13 @@ public class ApiRequest {
 
     private ResponseEntity<String> response;
 
+    public ApiRequest request(String url, String serviceId) {
+        return request(url, serviceId, HttpMethod.GET, null);
+    }
+
     public ApiRequest request(String url, String serviceId, HttpMethod method, Object data) {
         String requestUrl = utils.url(url, serviceId);
+        method = Objects.requireNonNullElse(method, HttpMethod.GET);
 
         HttpHeaders headers = new HttpHeaders();
         String token = utils.getToken();

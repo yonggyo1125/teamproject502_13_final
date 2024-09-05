@@ -1,8 +1,10 @@
 package org.choongang.file.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FileInfo {
     private Long seq; // 서버에 업로드될 파일 이름  - seq.확장자
 

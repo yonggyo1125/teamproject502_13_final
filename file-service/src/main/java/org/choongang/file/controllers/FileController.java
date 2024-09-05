@@ -125,11 +125,13 @@ public class FileController {
     @ApiResponse(responseCode = "200", description = "그룹 ID(gid)와 파일 구분 위치(location)으로 파일 목록 조회, location은 gid에 종속되는 검색 조건")
     @Parameters({
             @Parameter(name="gid", required = true, description = "경로변수, 그룹 ID"),
-            @Parameter(name="location", description = "파일 구분 위치")
+            @Parameter(name="location", description = "파일 구분 위치"),
+            @Parameter(name="status", description = "그룹 작업 상태 - ALL(완료 + 미완료), DONE(완료), UNDONE(미완료)")
     })
     @GetMapping("/list/{gid}")
-    public JSONData getList(@PathVariable("gid") String gid, @RequestParam(name="location", required = false) String location) {
-        List<FileInfo> items = infoService.getList(gid, location);
+    public JSONData getList(@PathVariable("gid") String gid, @RequestParam(name="location", required = false) String location, @RequestParam(name="status", required = false) String status) {
+        status = StringUtils.hasText(status) ? status.toUpperCase() : "DONE";
+        List<FileInfo> items = infoService.getList(gid, location, FileStatus.valueOf(status));
 
         return new JSONData(items);
     }
