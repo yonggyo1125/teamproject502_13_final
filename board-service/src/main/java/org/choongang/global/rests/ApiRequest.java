@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.choongang.global.Utils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -20,7 +22,11 @@ public class ApiRequest {
 
         HttpHeaders headers = new HttpHeaders();
         if (method != HttpMethod.GET && method != HttpMethod.DELETE) {
-
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            String token = utils.getToken();
+            if (StringUtils.hasText(token)) { // 토큰이 있다면 토큰 함께 전달
+                headers.setBearerAuth(token);
+            }
         }
         return this;
     }
