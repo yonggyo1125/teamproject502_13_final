@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -68,6 +69,19 @@ public class MemberInfoService implements UserDetailsService {
         /* 검색 처리 S */
         BooleanBuilder andBuilder = new BooleanBuilder();
         QMember member = QMember.member;
+
+        String sopt = search.getSopt();
+        String skey = search.getSkey();
+        sopt = StringUtils.hasText(sopt) ? sopt.toUpperCase() : "ALL";
+        if (StringUtils.hasText(skey)) {
+            skey = skey.trim();
+            if (sopt.equals("ALL")) { // 통합 검색
+
+            } else if (sopt.equals("name")) { // 회원명, 지도교수명
+
+            }
+
+        }
 
         /* 검색 처리 E */
 

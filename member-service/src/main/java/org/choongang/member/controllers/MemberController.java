@@ -45,14 +45,30 @@ public class MemberController {
     private final Utils utils;
 
     @Operation(summary = "인증(로그인)한 회원 정보 조회")
-    @ApiResponse(responseCode = "200")
+    @ApiResponse(responseCode = "200", description = "학생, 교수/상담자, 관리자에 따라 개인정보 조회 범위가 다르다<br>조회 가능 범위<br>학생 : 학과, 지도교수, 주소, 휴대폰 번호, 이메일<br>교수/상담사 : 담당 과목, 휴대폰 번호, 이메일")
     // 로그인한 회원 정보 조회
     @GetMapping("/account")
     @PreAuthorize("isAuthenticated()")
     public JSONData info(@AuthenticationPrincipal MemberInfo memberInfo) {
         Member member = memberInfo.getMember();
 
-        return new JSONData(member);
+        Authority authority = memberUtil.getMember().getAuthorities().get(0).getAuthority();
+
+        Map<String, Object> item = new HashMap<>();
+        item.put("seq", member.getSeq());
+        item.put("email", member.getEmail());
+        item.put("mobile", member.getMobile());
+        if (authority == Authority.COUNSELOR || authority == Authority.PROFESSOR) {
+            item.put("subject", member.getSubject());
+        } else if(authority == Authority.STUDENT) { // 학생
+            item.put("department", member.getDepartment());
+            item.put("professor", member.getProfessor());
+            item.put("zonecode", member.getZonecode());
+            item.put("address", member.getAddress());
+            item.put("addressSub", member.getAddressSub());
+        }
+
+        return authority == Authority.ADMIN ? new JSONData(member) : new JSONData(item);
     }
 
     @Operation(summary = "회원가입")
@@ -98,7 +114,7 @@ public class MemberController {
         return new JSONData(token);
     }
 
-    @Operation(summary = "회원 조회", description = "학생, 교수/상담자, 관리자에 따라 개인정보 조회 범위가 다르다")
+    @Operation(summary = "회원 조회", description = "학생, 교수/상담자, 관리자에 따라 개인정보 조회 범위가 다르다<br>조회 가능 범위<br>학생 : 학과, 지도교수, 주소, 휴대폰 번호, 이메일<br>교수/상담사 : 담당 과목, 휴대폰 번호, 이메일")
     @ApiResponse(responseCode = "200", description = "검색된 학생 목록")
     @Parameters({
             @Parameter(name="page", example = "1", description = "페이지 번호"),
