@@ -89,18 +89,17 @@ public class ApiRequest {
      * @param <T>
      */
 
-    public <T> T toJSON(Class<T> clazz) {
+    public <T> T toObj(Class<T> clazz) {
 
         JSONData jsonData = response.getBody();
-        String body = (String)jsonData.getData();
-        if (StringUtils.hasText(body)) {
-            try {
+        try {
+        String body = om.writeValueAsString(jsonData.getData());
+            if (StringUtils.hasText(body)) {
                 return om.readValue(body, clazz);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
             }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
-
         return null;
     }
 
@@ -111,18 +110,17 @@ public class ApiRequest {
      * @return
      * @param <T>
      */
-    public <T> List<T> toJSON(TypeReference<List<T>> typeReference) {
+    public <T> List<T> toList(TypeReference<List<T>> typeReference) {
 
         JSONData jsonData = response.getBody();
-        String body = (String)jsonData.getData();
-        if (StringUtils.hasText(body)) {
-            try {
+        try {
+            String body = om.writeValueAsString(jsonData.getData());
+            if (StringUtils.hasText(body)) {
                 return om.readValue(body, typeReference);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
             }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
-
         return null;
     }
 

@@ -1,7 +1,6 @@
 package org.choongang.file.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.discovery.converters.Auto;
 import org.choongang.global.Utils;
 import org.choongang.global.rests.JSONData;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,15 +16,13 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootTest
-@ActiveProfiles("test")
+//@ActiveProfiles("test")
 @AutoConfigureMockMvc
 public class FileControllerTest {
     @Autowired

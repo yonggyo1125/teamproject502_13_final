@@ -26,7 +26,7 @@ public class FileInfoService {
         ApiRequest result = apiRequest.request("/info/" + seq, "file-service");
 
         if (result.getStatus().is2xxSuccessful() && result.getData().isSuccess()) {
-            return result.toJSON(FileInfo.class);
+            return result.toObj(FileInfo.class);
         }
 
         return null;
@@ -41,13 +41,13 @@ public class FileInfoService {
      * @return
      */
     public List<FileInfo> getList(String gid, String location, FileStatus status) {
-        String url = "/list/" + gid;
+        String url = "/list/" + gid + "?";
         if (StringUtils.hasText(location)) url += "&location=" + location;
         if (status != null) url += "&status=" + status.name();
 
         ApiRequest result = apiRequest.request(url, "file-service");
         if (result.getStatus().is2xxSuccessful() && result.getData().isSuccess()) {
-            return result.toJSON(new TypeReference<>(){});
+            return result.toList(new TypeReference<>(){});
         }
 
         return null;
