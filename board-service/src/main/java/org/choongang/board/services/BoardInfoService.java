@@ -46,7 +46,7 @@ public class BoardInfoService {
     private final BoardDataRepository repository;
     private final BoardConfigInfoService configInfoService;
     private final FileInfoService fileInfoService;
-    //private final WishListService wishListService;
+    private final WishListService wishListService;
     private final CommentInfoService commentInfoService;
 
     private final HttpServletRequest request;
@@ -291,14 +291,13 @@ public class BoardInfoService {
      * @return
      */
     public ListData<BoardData> getWishList(CommonSearch search) {
-        /*
         int page = Math.max(search.getPage(), 1);
         int limit = search.getLimit();
         limit = limit < 1 ? 10 : limit;
         int offset = (page - 1) * limit;
 
 
-        List<Long> seqs = wishListService.getList(WishType.BOARD);
+        List<Long> seqs = wishListService.getList();
         if (seqs == null || seqs.isEmpty()) {
             return new ListData<>();
         }
@@ -322,10 +321,6 @@ public class BoardInfoService {
         Pagination pagination = new Pagination(page, (int)total, 10, limit, request);
 
         return new ListData<>(items, pagination);
-
-         */
-
-        return null;
     }
 
     /**
