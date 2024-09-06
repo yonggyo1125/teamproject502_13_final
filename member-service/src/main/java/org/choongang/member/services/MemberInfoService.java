@@ -1,18 +1,24 @@
 package org.choongang.member.services;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.choongang.global.ListData;
+import org.choongang.global.Pagination;
 import org.choongang.member.MemberInfo;
 import org.choongang.member.constants.Authority;
 import org.choongang.member.controllers.MemberSearch;
 import org.choongang.member.entities.Authorities;
 import org.choongang.member.entities.Member;
+import org.choongang.member.entities.QMember;
 import org.choongang.member.repositories.MemberRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +27,8 @@ import java.util.List;
 public class MemberInfoService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
+    private final JPAQueryFactory queryFactory;
+    private final HttpServletRequest request;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -44,8 +52,37 @@ public class MemberInfoService implements UserDetailsService {
                 .build();
     }
 
+    /**
+     * 회원 목록 조회
+     *
+     * @param search
+     * @return
+     */
+    @Transactional
     public ListData<Member> getList(MemberSearch search) {
+        int page = Math.max(search.getPage(), 1);
+        int limit = search.getLimit();
+        limit = limit < 1 ? 20 : limit;
+        int offset = (page - 1) * limit;
 
-        return null;
+        /* 검색 처리 S */
+        BooleanBuilder andBuilder = new BooleanBuilder();
+        QMember member = QMember.member;
+
+        /* 검색 처리 E */
+
+        List<Member> items = queryFactory.selectFrom(member)
+                .leftJoin(member.authorities)
+                .fetchJoin()
+                .where(andBuilder)
+                .offset(offset)
+                .limit(limit)
+                .orderBy(member.createdAt.desc())
+                .fetch();
+
+        long total = memberRepository.count(andBuilder);
+        Pagination pagination = new Pagination(page, (int)total, 10, limit, request);
+
+        return new ListData<>(items, pagination);
     }
 }

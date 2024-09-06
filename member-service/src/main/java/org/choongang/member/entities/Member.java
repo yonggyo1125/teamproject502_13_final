@@ -31,6 +31,15 @@ public class Member extends BaseEntity {
     @Column(length=15, nullable = false)
     private String mobile;
 
+    private String department; // 학과
+    private String professor; // 지도 교수
+
+    private String zonecode; // 우펴번호
+    private String address; // 주소
+    private String addressSub; // 나머지 주소
+
+    private String subject; // 담당 과목
+
     @ToString.Exclude
     @OneToMany(mappedBy = "member")
     private List<Authorities> authorities;

@@ -13,6 +13,8 @@ import org.choongang.global.Utils;
 import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.JSONData;
 import org.choongang.member.MemberInfo;
+import org.choongang.member.MemberUtil;
+import org.choongang.member.constants.Authority;
 import org.choongang.member.entities.Member;
 import org.choongang.member.jwt.TokenProvider;
 import org.choongang.member.services.MemberInfoService;
@@ -25,7 +27,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Member", description = "회원 인증 API")
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Tag(name = "Member", description = "회원 API")
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -34,6 +41,7 @@ public class MemberController {
     private final MemberSaveService saveService;
     private final MemberInfoService infoService;
     private final TokenProvider tokenProvider;
+    private final MemberUtil memberUtil;
     private final Utils utils;
 
     @Operation(summary = "인증(로그인)한 회원 정보 조회")
@@ -100,8 +108,36 @@ public class MemberController {
     @PreAuthorize("hasAnyAuthority('STUDENT', 'COUNSELOR', 'PROFESSOR')")
     public JSONData list(@ModelAttribute MemberSearch search) {
 
+        /**
+         * 조회 가능 범위
+         * 학생 : 학과, 지도교수, 주소, 휴대폰 번호, 이메일
+         * 교수/상담사 : 담당 과목, 휴대폰 번호, 이메일
+         */
+
         ListData<Member> data = infoService.getList(search);
 
-        return new JSONData(data);
+        List<Member> items = data.getItems();
+        Authority authority = memberUtil.getMember().getAuthorities().get(0).getAuthority();
+
+        List<Map<String, Object>> newItems = new ArrayList<>();
+        for (Member item : items) {
+            Map<String, Object> _item = new HashMap<>();
+            _item.put("seq", item.getSeq());
+            _item.put("email", item.getEmail());
+            _item.put("mobile", item.getMobile());
+            if (authority == Authority.COUNSELOR || authority == Authority.PROFESSOR) {
+                _item.put("subject", item.getSubject());
+            } else { // 학생
+                _item.put("department", item.getDepartment());
+                _item.put("professor", item.getProfessor());
+                _item.put("zonecode", item.getZonecode());
+                _item.put("address", item.getAddress());
+                _item.put("addressSub", item.getAddressSub());
+            }
+
+            newItems.add(_item);
+        }
+        ListData<Map<String, Object>> data2 = new ListData<>(newItems, data.getPagination());
+        return new JSONData(data2);
     }
 }
