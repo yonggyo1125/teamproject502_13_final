@@ -36,7 +36,8 @@ public class SecurityConfig {
                    h.accessDeniedHandler((req, res, e) -> res.sendError(HttpStatus.UNAUTHORIZED.value()));
                 })
                 .authorizeHttpRequests(c -> {
-                        c.anyRequest().permitAll();
+                        c.requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+                                .anyRequest().permitAll();
                 });
 
         return http.build();

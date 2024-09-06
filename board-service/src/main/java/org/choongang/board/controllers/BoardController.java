@@ -1,5 +1,6 @@
 package org.choongang.board.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.choongang.board.entities.Board;
@@ -8,7 +9,6 @@ import org.choongang.board.services.BoardDeleteService;
 import org.choongang.board.services.BoardInfoService;
 import org.choongang.board.services.BoardSaveService;
 import org.choongang.board.services.BoardViewCountService;
-import org.choongang.board.services.comment.CommentInfoService;
 import org.choongang.board.services.config.BoardConfigInfoService;
 import org.choongang.board.validators.BoardValidator;
 import org.choongang.global.CommonSearch;
@@ -22,6 +22,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+
+@Tag(name = "Board", description = "게시글 API")
 @RestController
 @RequiredArgsConstructor
 public class BoardController {
@@ -30,7 +32,6 @@ public class BoardController {
     private final BoardSaveService saveService;
     private final BoardDeleteService deleteService;
     private final BoardViewCountService viewCountService;
-    private final CommentInfoService commentInfoService;
     private final BoardValidator validator;
     private final Utils utils;
 

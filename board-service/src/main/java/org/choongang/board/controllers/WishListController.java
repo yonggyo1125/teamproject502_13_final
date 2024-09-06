@@ -16,7 +16,7 @@ public class WishListController {
 
     private final WishListService service;
 
-    @GetMapping
+    @GetMapping("/list")
     public JSONData list() {
         List<Long> seqs = service.getList();
 
