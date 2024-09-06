@@ -1,9 +1,10 @@
 package org.choongang.member.services;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.jni.FileInfo;
+import org.choongang.global.ListData;
 import org.choongang.member.MemberInfo;
 import org.choongang.member.constants.Authority;
+import org.choongang.member.controllers.MemberSearch;
 import org.choongang.member.entities.Authorities;
 import org.choongang.member.entities.Member;
 import org.choongang.member.repositories.MemberRepository;
@@ -41,5 +42,10 @@ public class MemberInfoService implements UserDetailsService {
                 .member(member)
                 .authorities(authorities)
                 .build();
+    }
+
+    public ListData<Member> getList(MemberSearch search) {
+
+        return null;
     }
 }
