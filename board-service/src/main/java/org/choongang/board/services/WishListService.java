@@ -1,5 +1,6 @@
 package org.choongang.board.services;
 
+import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.choongang.board.entities.QWishList;
 import org.choongang.board.entities.WishList;
@@ -43,7 +44,7 @@ public class WishListService {
 
         QWishList wishList = QWishList.wishList;
 
-        List<Long> items = ((List<WishList>)repository.findAll(wishList.createdBy.eq(memberUtil.getMember().getEmail()), Sort.by(desc("createdAt")))).stream().map(WishList::getSeq).toList();
+        List<Long> items = ((List<WishList>)repository.findAll(wishList.email.eq(memberUtil.getMember().getEmail()), Sort.by(desc("createdAt")))).stream().map(WishList::getSeq).toList();
 
 
         return items;
@@ -51,7 +52,12 @@ public class WishListService {
 
     public boolean check(Long seq) {
         if (memberUtil.isLogin()) {
-            return repository.existsById(seq);
+            BooleanBuilder builder = new BooleanBuilder();
+            QWishList wishList = QWishList.wishList;
+            builder.and(wishList.seq.eq(seq))
+                    .and(wishList.email.eq(memberUtil.getMember().getEmail()));
+
+            return repository.exists(builder);
         }
 
         return false;
