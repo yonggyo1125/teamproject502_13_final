@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.choongang.global.ListData;
 import org.choongang.global.Utils;
 import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.JSONData;
@@ -25,11 +24,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Tag(name = "Member", description = "회원 API")
@@ -112,48 +112,5 @@ public class MemberController {
         String token = tokenProvider.createToken(form.getEmail(), form.getPassword());
 
         return new JSONData(token);
-    }
-
-    @Operation(summary = "회원 조회", description = "학생, 교수/상담자, 관리자에 따라 개인정보 조회 범위가 다르다<br>조회 가능 범위<br>학생 : 학과, 지도교수, 주소, 휴대폰 번호, 이메일<br>교수/상담사 : 담당 과목, 휴대폰 번호, 이메일")
-    @ApiResponse(responseCode = "200", description = "검색된 학생 목록")
-    @Parameters({
-            @Parameter(name="page", example = "1", description = "페이지 번호"),
-            @Parameter(name="limit", example = "20", description = "페이지당 레코드 갯수"),
-    })
-    @GetMapping("/list")
-    @PreAuthorize("hasAnyAuthority('STUDENT', 'COUNSELOR', 'PROFESSOR')")
-    public JSONData list(@ModelAttribute MemberSearch search) {
-
-        /**
-         * 조회 가능 범위
-         * 학생 : 학과, 지도교수, 주소, 휴대폰 번호, 이메일
-         * 교수/상담사 : 담당 과목, 휴대폰 번호, 이메일
-         */
-
-        ListData<Member> data = infoService.getList(search);
-
-        List<Member> items = data.getItems();
-        Authority authority = memberUtil.getMember().getAuthorities().get(0).getAuthority();
-
-        List<Map<String, Object>> newItems = new ArrayList<>();
-        for (Member item : items) {
-            Map<String, Object> _item = new HashMap<>();
-            _item.put("seq", item.getSeq());
-            _item.put("email", item.getEmail());
-            _item.put("mobile", item.getMobile());
-            if (authority == Authority.COUNSELOR || authority == Authority.PROFESSOR) {
-                _item.put("subject", item.getSubject());
-            } else { // 학생
-                _item.put("department", item.getDepartment());
-                _item.put("professor", item.getProfessor());
-                _item.put("zonecode", item.getZonecode());
-                _item.put("address", item.getAddress());
-                _item.put("addressSub", item.getAddressSub());
-            }
-
-            newItems.add(_item);
-        }
-        ListData<Map<String, Object>> data2 = new ListData<>(newItems, data.getPagination());
-        return new JSONData(data2);
     }
 }
