@@ -6,6 +6,7 @@ import org.choongang.global.validators.PasswordValidator;
 import org.choongang.member.controllers.RequestJoin;
 import org.choongang.member.repositories.MemberRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -55,7 +56,7 @@ public class JoinValidator implements Validator, PasswordValidator, MobileValida
         }
 
         // 4. 휴대전화번호 형식 체크
-        if (!mobileCheck(mobile)) {
+        if (StringUtils.hasText(mobile) && !mobileCheck(mobile)) {
             errors.rejectValue("mobile", "Mobile");
         }
     }

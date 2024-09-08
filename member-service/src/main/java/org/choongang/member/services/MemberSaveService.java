@@ -44,10 +44,16 @@ public class MemberSaveService {
      * 회원정보 수정
      * @param form
      */
-    public void save(RequestUpdate form) {
-        Member member = memberUtil.getMember();
-        String email = member.getEmail();
-        member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+    public void save(RequestUpdate form, List<Authority> authorities) {
+        String email = null;
+        if (memberUtil.isAdmin() && StringUtils.hasText(form.getEmail())) {
+            email = form.getEmail();
+        } else {
+            Member member = memberUtil.getMember();
+            email = member.getEmail();
+        }
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
         String password = form.getPassword();
         String mobile = form.getMobile();
         if (StringUtils.hasText(mobile)) {
@@ -62,7 +68,11 @@ public class MemberSaveService {
             member.setPassword(hash);
         }
 
-        save(member, null);
+        save(member, authorities);
+    }
+
+    public void save(RequestUpdate form) {
+        save(form, null);
     }
 
     public void save(Member member, List<Authority> authorities) {
