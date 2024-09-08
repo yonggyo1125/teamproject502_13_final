@@ -1,6 +1,7 @@
 package org.choongang.member.services;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -75,14 +76,18 @@ public class MemberInfoService implements UserDetailsService {
         sopt = StringUtils.hasText(sopt) ? sopt.toUpperCase() : "ALL";
         if (StringUtils.hasText(skey)) {
             skey = skey.trim();
+            StringExpression expression = null;
             if (sopt.equals("ALL")) { // 통합 검색
-
-            } else if (sopt.equals("name")) { // 회원명, 지도교수명
-
+                expression = member.email.concat(member.userName)
+                        .concat(member.mobile)
+                        .concat(member.address)
+                        .concat(member.addressSub);
+            } else if (sopt.equals("name")) {
+                expression = member.userName;
             }
-
+            andBuilder.and(expression.contains(skey));
         }
-
+        
         /* 검색 처리 E */
 
         List<Member> items = queryFactory.selectFrom(member)
