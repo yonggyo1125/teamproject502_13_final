@@ -10,6 +10,8 @@ import org.choongang.board.entities.Board;
 import org.choongang.board.entities.QBoard;
 import org.choongang.board.exceptions.BoardNotFoundException;
 import org.choongang.board.repositories.BoardRepository;
+import org.choongang.file.entities.FileInfo;
+import org.choongang.file.services.FileInfoService;
 import org.choongang.global.ListData;
 import org.choongang.global.Pagination;
 import org.modelmapper.ModelMapper;
@@ -28,6 +30,7 @@ import static org.springframework.data.domain.Sort.Order.desc;
 @RequiredArgsConstructor
 public class BoardConfigInfoService {
     private final BoardRepository boardRepository;
+    private final FileInfoService fileInfoService;
     private final HttpServletRequest request;
 
     /**
@@ -67,15 +70,13 @@ public class BoardConfigInfoService {
      */
     public void addBoardInfo(Board board) {
         String gid = board.getGid();
-        /*
+
         List<FileInfo> htmlTopImages = fileInfoService.getList(gid, "html_top");
 
         List<FileInfo> htmlBottomImages = fileInfoService.getList(gid, "html_bottom");
 
         board.setHtmlTopImages(htmlTopImages);
         board.setHtmlBottomImages(htmlBottomImages);
-
-         */
     }
 
     /**

@@ -2,7 +2,8 @@ package org.choongang.board.controllers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import org.apache.tomcat.jni.FileInfo;
+import org.choongang.file.entities.FileInfo;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -43,6 +44,6 @@ public class RequestBoard {
     private String longText1;
     private String longText2;
 
-    //private List<FileInfo> editorImages;
-    //private List<FileInfo> attachFiles;
+    private List<FileInfo> editorImages;
+    private List<FileInfo> attachFiles;
 }
