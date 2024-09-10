@@ -39,6 +39,7 @@ public class FileController {
     private final FileDeleteService deleteService;
     private final BeforeFileUploadProcess beforeProcess;
     private final AfterFileUploadProcess afterProcess;
+    private final FileUploadDoneService doneService;
     private final Utils utils;
     private final ThumbnailService thumbnailService;
     private final FileSelectService selectService;
@@ -187,5 +188,16 @@ public class FileController {
         }
 
         return new JSONData(Objects.requireNonNullElse(items, Collections.EMPTY_LIST));
+    }
+
+    @Operation(summary = "파일 그룹 작업 완료 처리", method = "GET")
+    @ApiResponse(responseCode = "200")
+    @Parameters({
+            @Parameter(name="gid", required = true, description = "경로변수, 그룹 ID"),
+            @Parameter(name="location", description = "파일 그룹내 위치", example = "editor")
+    })
+    @GetMapping("/done/{gid}")
+    public void processDone(@PathVariable("gid") String gid, @RequestParam(name="location", required = false) String location) {
+        doneService.process(gid, location);
     }
 }

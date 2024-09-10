@@ -8,4 +8,5 @@ import lombok.Data;
 @Entity
 @DiscriminatorValue("S")
 public class Student extends Member {
+
 }
