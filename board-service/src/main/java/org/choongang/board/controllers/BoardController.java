@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.choongang.board.constants.DeleteStatus;
 import org.choongang.board.entities.Board;
 import org.choongang.board.entities.BoardData;
 import org.choongang.board.services.BoardDeleteService;
@@ -20,11 +21,15 @@ import org.choongang.global.ListData;
 import org.choongang.global.Utils;
 import org.choongang.global.exceptions.BadRequestException;
 import org.choongang.global.rests.JSONData;
+import org.choongang.member.MemberUtil;
+import org.choongang.member.entities.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @Tag(name = "Board", description = "게시글 API")
@@ -38,6 +43,7 @@ public class BoardController {
     private final BoardViewCountService viewCountService;
     private final BoardValidator validator;
     private final Utils utils;
+    private final MemberUtil memberUtil;
 
 
     @Operation(summary = "게시판 설정 조회", method = "GET")
@@ -160,6 +166,20 @@ public class BoardController {
     @GetMapping("/list/{bid}")
     public JSONData list(@PathVariable("bid") String bid, @ModelAttribute BoardDataSearch search) {
         ListData<BoardData> data = infoService.getList(bid, search);
+
+        return new JSONData(data);
+    }
+
+    @GetMapping("/mylist")
+    public JSONData myList(BoardDataSearch search) {
+        if (!memberUtil.isLogin()) {
+            return new JSONData(new ListData<>());
+        }
+
+        Member member = memberUtil.getMember();
+        search.setEmail(List.of(member.getEmail()));
+
+        ListData<BoardData> data = infoService.getList(search, DeleteStatus.UNDELETED);
 
         return new JSONData(data);
     }

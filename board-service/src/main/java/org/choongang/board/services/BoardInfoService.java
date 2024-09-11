@@ -146,6 +146,11 @@ public class BoardInfoService {
             andBuilder.and(orBuilder);
         }
 
+        List<String> email = search.getEmail();
+        if (email != null && !email.isEmpty()) {
+            andBuilder.and(boardData.email.in(email));
+        }
+
         /* 검색 처리 E */
 
         /* 정렬 처리 S */

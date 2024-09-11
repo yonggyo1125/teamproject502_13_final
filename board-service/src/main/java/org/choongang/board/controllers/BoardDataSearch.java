@@ -12,4 +12,6 @@ public class BoardDataSearch extends CommonSearch {
     private List<String> bids; // 게시한 ID 여러개
 
     private String sort; // 정렬 조건
+
+    private List<String> email; // 회원 이메일
 }
