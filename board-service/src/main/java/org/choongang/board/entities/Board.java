@@ -59,7 +59,7 @@ public class Board extends BaseMemberEntity {
     private String locationAfterWriting = "list"; // 글 작성 후 이동 위치
 
     private boolean showListBelowView; // 글 보기 하단 게시글 목록 노출 여부
-
+    
     @Column(length=10, nullable = false)
     private String skin = "default"; // 스킨
 
@@ -85,7 +85,9 @@ public class Board extends BaseMemberEntity {
     @Enumerated(EnumType.STRING)
     @Column(length=20, nullable = false)
     private Authority commentAccessType = Authority.ALL; // 권한 설정 - 댓글
-
+    
+    private Boolean privateAccess; // 로그인한 사용자만 접근 가능
+    
     @Lob
     private String htmlTop; // 게시판 상단 HTML
 

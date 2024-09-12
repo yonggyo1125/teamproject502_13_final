@@ -57,6 +57,8 @@ public class RequestBoardConfig {
 
     private String commentAccessType = "ALL"; // 권한 설정 - 댓글
 
+    private boolean privateAccess; // 로그인한 사용자만 접근 가능
+
     private String htmlTop; // 게시판 상단 HTML
     private String htmlBottom; // 게시판 하단 HTML
 

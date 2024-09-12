@@ -93,7 +93,7 @@ public class ApiRequest {
 
         JSONData jsonData = response.getBody();
         try {
-        String body = om.writeValueAsString(jsonData.getData());
+            String body = om.writeValueAsString(jsonData.getData());
             if (StringUtils.hasText(body)) {
                 return om.readValue(body, clazz);
             }

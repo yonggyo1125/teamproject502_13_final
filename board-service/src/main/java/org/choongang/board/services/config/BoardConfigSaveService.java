@@ -50,6 +50,9 @@ public class BoardConfigSaveService {
         board.setReplyAccessType(Authority.valueOf(form.getReplyAccessType()));
         board.setCommentAccessType(Authority.valueOf(form.getCommentAccessType()));
 
+        // 로그인한 사용자만 접근 가능
+        board.setPrivateAccess(form.isPrivateAccess());
+
         board.setHtmlTop(form.getHtmlTop());
         board.setHtmlBottom(form.getHtmlBottom());
 
